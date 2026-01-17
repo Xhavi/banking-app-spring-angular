@@ -9,7 +9,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   selector: 'app-movimientos',
   standalone: true,
   templateUrl: './movimientos.component.html',
-  styleUrls: ['./movimientos.component.css']
+  styleUrls: ['./movimientos.component.css'],
   imports: [CommonModule, FormsModule, ReactiveFormsModule]
 })
 export class MovimientosComponent implements OnInit {
