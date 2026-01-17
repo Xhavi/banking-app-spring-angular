@@ -58,6 +58,14 @@ cd backend
 mvn spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
+### CORS (frontend ↔ backend)
+
+El frontend corre típicamente en `http://localhost:4200` y el backend en `http://localhost:8080`, por lo que el navegador aplica CORS.
+Este proyecto permite por defecto el origen `http://localhost:4200`.
+
+- Para permitir otros orígenes, configura `CORS_ALLOWED_ORIGINS` (separado por comas), por ejemplo:
+  - `CORS_ALLOWED_ORIGINS=http://localhost:4200,http://localhost:4201`
+
 Pruebas:
 
 ```bash
