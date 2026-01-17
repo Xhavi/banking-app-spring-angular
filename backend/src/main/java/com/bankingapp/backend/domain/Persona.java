@@ -18,10 +18,13 @@ public class Persona {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Column(nullable = false)
   private String nombre;
 
+  @Column(nullable = false)
   private String genero;
 
+  @Column(nullable = false)
   private Integer edad;
 
   @Column(nullable = false)
