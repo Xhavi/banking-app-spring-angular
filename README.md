@@ -48,6 +48,16 @@ cd backend
 mvn spring-boot:run
 ```
 
+Nota: por defecto el backend intenta conectarse a PostgreSQL en `localhost:5432` (ver `backend/src/main/resources/application.yml`).
+
+- Si no tienes PostgreSQL levantado, primero ejecuta `docker compose up -d postgres` (o `docker compose up -d --build`).
+- Alternativa sin Postgres/Docker: usa el perfil `local` (H2 en memoria):
+
+```bash
+cd backend
+mvn spring-boot:run -Dspring-boot.run.profiles=local
+```
+
 Pruebas:
 
 ```bash
