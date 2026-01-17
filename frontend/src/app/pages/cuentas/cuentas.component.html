@@ -1,0 +1,95 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h2>Cuentas</h2>
+      <p>Administración de cuentas bancarias y saldos.</p>
+    </div>
+    <button type="button" class="primary" (click)="nuevo()">Nuevo</button>
+  </header>
+
+  <div class="toolbar">
+    <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar por número, tipo o cliente" />
+    <button type="button" (click)="buscar()">Buscar</button>
+  </div>
+
+  <div class="content-grid">
+    <form class="card" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <h3>{{ editingId ? 'Editar cuenta' : 'Nueva cuenta' }}</h3>
+      <div class="form-grid">
+        <label>
+          Número de cuenta
+          <input formControlName="numeroCuenta" />
+          <span class="error" *ngIf="form.get('numeroCuenta')?.touched && form.get('numeroCuenta')?.invalid">Requerido.</span>
+        </label>
+        <label>
+          Tipo
+          <select formControlName="tipo">
+            <option value="">Seleccione</option>
+            <option value="Ahorros">Ahorros</option>
+            <option value="Corriente">Corriente</option>
+          </select>
+          <span class="error" *ngIf="form.get('tipo')?.touched && form.get('tipo')?.invalid">Requerido.</span>
+        </label>
+        <label>
+          Saldo inicial
+          <input type="number" formControlName="saldo" />
+          <span class="error" *ngIf="form.get('saldo')?.touched && form.get('saldo')?.invalid">Ingrese un saldo válido.</span>
+        </label>
+        <label>
+          Estado
+          <select formControlName="estado">
+            <option [ngValue]="true">Activo</option>
+            <option [ngValue]="false">Inactivo</option>
+          </select>
+        </label>
+        <label>
+          Cliente ID
+          <input type="number" formControlName="clienteId" />
+          <span class="error" *ngIf="form.get('clienteId')?.touched && form.get('clienteId')?.invalid">Requerido.</span>
+        </label>
+      </div>
+
+      <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+      <div class="actions">
+        <button type="submit" class="primary">{{ editingId ? 'Actualizar' : 'Guardar' }}</button>
+        <button type="button" class="ghost" (click)="nuevo()">Limpiar</button>
+      </div>
+    </form>
+
+    <div class="card">
+      <h3>Listado</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Número</th>
+            <th>Tipo</th>
+            <th>Saldo</th>
+            <th>Estado</th>
+            <th>Cliente</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cuenta of cuentas">
+            <td>{{ cuenta.numeroCuenta }}</td>
+            <td>{{ cuenta.tipo }}</td>
+            <td>{{ cuenta.saldo | number: '1.2-2' }}</td>
+            <td>
+              <span [class.badge-success]="cuenta.estado" [class.badge-danger]="!cuenta.estado">
+                {{ cuenta.estado ? 'Activa' : 'Inactiva' }}
+              </span>
+            </td>
+            <td>{{ cuenta.clienteId }}</td>
+            <td class="actions">
+              <button type="button" class="ghost" (click)="editar(cuenta)">Editar</button>
+              <button type="button" class="danger" (click)="eliminar(cuenta)">Eliminar</button>
+            </td>
+          </tr>
+          <tr *ngIf="cuentas.length === 0">
+            <td colspan="6">No hay cuentas registradas.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
