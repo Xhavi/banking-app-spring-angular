@@ -3,10 +3,10 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
-  it('renders the sidebar menu', () => {
-    TestBed.configureTestingModule({
+  it('renders the sidebar menu', async () => {
+    await TestBed.configureTestingModule({
       imports: [AppComponent, RouterTestingModule]
-    });
+    }).compileComponents();
 
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();

@@ -9,7 +9,6 @@ import com.bankingapp.backend.domain.Cuenta;
 import com.bankingapp.backend.domain.Persona;
 import com.bankingapp.backend.repository.ClienteRepository;
 import com.bankingapp.backend.repository.CuentaRepository;
-import com.bankingapp.backend.repository.PersonaRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -34,9 +33,6 @@ class MovimientoControllerTest {
   private ObjectMapper objectMapper;
 
   @Autowired
-  private PersonaRepository personaRepository;
-
-  @Autowired
   private ClienteRepository clienteRepository;
 
   @Autowired
@@ -51,7 +47,6 @@ class MovimientoControllerTest {
     persona.setIdentificacion("1101112223");
     persona.setDireccion("Av. Siempre Viva");
     persona.setTelefono("0999999999");
-    persona = personaRepository.save(persona);
 
     Cliente cliente = new Cliente();
     cliente.setClienteId("CLI-TEST");

@@ -8,7 +8,7 @@ import { ApiService } from '../../services/api.service';
   selector: 'app-clientes',
   standalone: true,
   templateUrl: './clientes.component.html',
-  styleUrl: './clientes.component.css',
+  styleUrls: ['./clientes.component.css'],
   imports: [CommonModule, FormsModule, ReactiveFormsModule]
 })
 export class ClientesComponent implements OnInit {
