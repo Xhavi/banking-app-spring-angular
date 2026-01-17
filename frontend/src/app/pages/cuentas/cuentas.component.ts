@@ -8,7 +8,7 @@ import { ApiService } from '../../services/api.service';
   selector: 'app-cuentas',
   standalone: true,
   templateUrl: './cuentas.component.html',
-  styleUrl: './cuentas.component.css',
+  styleUrls: ['./cuentas.component.css'],
   imports: [CommonModule, FormsModule, ReactiveFormsModule]
 })
 export class CuentasComponent implements OnInit {

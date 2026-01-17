@@ -9,14 +9,15 @@ describe('ApiService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule]
+      imports: [HttpClientTestingModule],
+      providers: [ApiService]
     });
     service = TestBed.inject(ApiService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {
-    httpMock.verify();
+    httpMock?.verify();
   });
 
   it('builds the report request with query params', () => {

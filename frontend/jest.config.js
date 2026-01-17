@@ -4,7 +4,7 @@ module.exports = {
   testMatch: ['**/+(*.)+(spec).+(ts)'],
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
-      'ts-jest',
+      'jest-preset-angular',
       {
         tsconfig: '<rootDir>/tsconfig.spec.json',
         stringifyContentPathRegex: '\\.(html|svg)$'

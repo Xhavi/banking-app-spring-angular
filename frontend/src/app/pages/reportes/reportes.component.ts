@@ -8,7 +8,7 @@ import { ReporteResponse } from '../../models/reporte.model';
   selector: 'app-reportes',
   standalone: true,
   templateUrl: './reportes.component.html',
-  styleUrl: './reportes.component.css',
+  styleUrls: ['./reportes.component.css'],
   imports: [CommonModule, FormsModule]
 })
 export class ReportesComponent {
