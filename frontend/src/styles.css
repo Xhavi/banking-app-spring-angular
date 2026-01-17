@@ -1,0 +1,18 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: #f4f6fb;
+}
+
+h1, h2 {
+  color: #0f172a;
+}
+
+p {
+  margin: 0;
+  color: #475569;
+}
