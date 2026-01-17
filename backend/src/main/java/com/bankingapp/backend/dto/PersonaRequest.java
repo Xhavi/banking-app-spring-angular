@@ -6,7 +6,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 
 public record PersonaRequest(
   @NotBlank String nombre,
-  String genero,
+  @NotBlank String genero,
   @NotNull @PositiveOrZero Integer edad,
   @NotBlank String identificacion,
   String direccion,
