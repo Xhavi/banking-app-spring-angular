@@ -2,3 +2,65 @@
   display: grid;
   gap: 0.5rem;
 }
+.reportes {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reporte-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+  background: #f7f7f7;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.reporte-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.reporte-form input {
+  min-width: 180px;
+  padding: 6px 8px;
+}
+
+.reporte-form button {
+  padding: 8px 16px;
+}
+
+.mensaje {
+  padding: 10px 12px;
+  border-radius: 6px;
+}
+
+.mensaje.error {
+  background: #ffe5e5;
+  color: #a82424;
+}
+
+.mensaje.info {
+  background: #e7f1ff;
+  color: #1b4b91;
+}
+
+.tabla-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}

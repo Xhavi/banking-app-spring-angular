@@ -1,4 +1,55 @@
 <section class="page">
+<section class="reportes">
   <h2>Reportes</h2>
-  <p>Panel de reportes y análisis (próximamente).</p>
+
+  <form class="reporte-form" (ngSubmit)="buscarReporte()">
+    <label>
+      Fecha inicio
+      <input type="date" [(ngModel)]="fechaInicio" name="fechaInicio" required />
+    </label>
+
+    <label>
+      Fecha fin
+      <input type="date" [(ngModel)]="fechaFin" name="fechaFin" required />
+    </label>
+
+    <label>
+      Cliente ID
+      <input type="number" [(ngModel)]="clienteId" name="clienteId" min="1" required />
+    </label>
+
+    <button type="submit" [disabled]="isLoading">Buscar</button>
+    <button type="button" (click)="descargarPdf()" [disabled]="!reporte?.pdfBase64">Descargar PDF</button>
+  </form>
+
+  <p class="mensaje error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  <p class="mensaje info" *ngIf="infoMessage">{{ infoMessage }}</p>
+
+  <div class="tabla-wrapper" *ngIf="reporte?.movimientos?.length">
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Cliente</th>
+          <th>Cuenta</th>
+          <th>Tipo</th>
+          <th>Saldo inicial</th>
+          <th>Movimiento</th>
+          <th>Saldo disponible</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let movimiento of reporte?.movimientos">
+          <td>{{ movimiento.fecha | date: 'yyyy-MM-dd HH:mm' }}</td>
+          <td>{{ movimiento.cliente }}</td>
+          <td>{{ movimiento.numeroCuenta }}</td>
+          <td>{{ movimiento.tipoCuenta }}</td>
+          <td>{{ movimiento.saldoInicial | number: '1.2-2' }}</td>
+          <td>{{ movimiento.movimiento | number: '1.2-2' }}</td>
+          <td>{{ movimiento.saldoDisponible | number: '1.2-2' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 </section>

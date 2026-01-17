@@ -1,6 +1,7 @@
 package com.bankingapp.backend.exception;
 
 import com.bankingapp.backend.dto.ErrorResponse;
+import com.bankingapp.backend.exception.BusinessRuleException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.stream.Collectors;
@@ -24,6 +25,19 @@ public class GlobalExceptionHandler {
     );
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+  }
+
+  @ExceptionHandler(BusinessRuleException.class)
+  public ResponseEntity<ErrorResponse> handleBusinessRule(BusinessRuleException ex, HttpServletRequest request) {
+    ErrorResponse response = new ErrorResponse(
+      Instant.now(),
+      HttpStatus.BAD_REQUEST.value(),
+      HttpStatus.BAD_REQUEST.getReasonPhrase(),
+      ex.getMessage(),
+      request.getRequestURI()
+    );
+
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)

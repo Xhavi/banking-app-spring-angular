@@ -4,10 +4,12 @@ import com.bankingapp.backend.domain.Cuenta;
 import com.bankingapp.backend.domain.Movimiento;
 import com.bankingapp.backend.dto.MovimientoRequest;
 import com.bankingapp.backend.dto.MovimientoResponse;
+import com.bankingapp.backend.exception.BusinessRuleException;
 import com.bankingapp.backend.exception.ResourceNotFoundException;
 import com.bankingapp.backend.repository.CuentaRepository;
 import com.bankingapp.backend.repository.MovimientoRepository;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +19,7 @@ import org.springframework.util.StringUtils;
 @Service
 public class MovimientoServiceImpl implements MovimientoService {
 
+  private static final BigDecimal DAILY_WITHDRAWAL_LIMIT = new BigDecimal("1000");
   private final MovimientoRepository movimientoRepository;
   private final CuentaRepository cuentaRepository;
 
@@ -77,6 +80,10 @@ public class MovimientoServiceImpl implements MovimientoService {
 
     BigDecimal valor = request.valor();
     BigDecimal adjustedValor = isDebito(request.tipo()) ? valor.abs().negate() : valor.abs();
+    if (updateCuentaSaldo && isDebito(request.tipo())) {
+      validarSaldoDisponible(cuenta, valor.abs());
+      validarCupoDiario(cuenta, movimiento.getFecha(), valor.abs());
+    }
     movimiento.setValor(adjustedValor);
 
     if (updateCuentaSaldo) {
@@ -94,6 +101,23 @@ public class MovimientoServiceImpl implements MovimientoService {
 
   private boolean isDebito(String tipo) {
     return tipo != null && ("DEBITO".equalsIgnoreCase(tipo) || "RETIRO".equalsIgnoreCase(tipo));
+  }
+
+  private void validarSaldoDisponible(Cuenta cuenta, BigDecimal valor) {
+    BigDecimal saldoActual = cuenta.getSaldo() != null ? cuenta.getSaldo() : BigDecimal.ZERO;
+    if (saldoActual.compareTo(valor) < 0) {
+      throw new BusinessRuleException("Saldo no disponible");
+    }
+  }
+
+  private void validarCupoDiario(Cuenta cuenta, LocalDateTime fechaMovimiento, BigDecimal valor) {
+    LocalDate fecha = fechaMovimiento.toLocalDate();
+    LocalDateTime start = fecha.atStartOfDay();
+    LocalDateTime end = start.plusDays(1);
+    BigDecimal usado = movimientoRepository.sumDailyWithdrawals(cuenta.getId(), start, end);
+    if (usado.add(valor).compareTo(DAILY_WITHDRAWAL_LIMIT) > 0) {
+      throw new BusinessRuleException("Cupo diario Excedido");
+    }
   }
 
   private MovimientoResponse toResponse(Movimiento movimiento) {
