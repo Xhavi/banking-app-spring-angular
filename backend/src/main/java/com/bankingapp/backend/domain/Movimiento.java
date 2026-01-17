@@ -10,15 +10,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "movimiento")
 public class Movimiento {
@@ -41,4 +33,64 @@ public class Movimiento {
 
   @Column(precision = 19, scale = 2)
   private BigDecimal saldo;
+
+  public Movimiento() {
+  }
+
+  public Movimiento(Long id, Cuenta cuenta, LocalDateTime fecha, String tipo, BigDecimal valor, BigDecimal saldo) {
+    this.id = id;
+    this.cuenta = cuenta;
+    this.fecha = fecha;
+    this.tipo = tipo;
+    this.valor = valor;
+    this.saldo = saldo;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public Cuenta getCuenta() {
+    return cuenta;
+  }
+
+  public void setCuenta(Cuenta cuenta) {
+    this.cuenta = cuenta;
+  }
+
+  public LocalDateTime getFecha() {
+    return fecha;
+  }
+
+  public void setFecha(LocalDateTime fecha) {
+    this.fecha = fecha;
+  }
+
+  public String getTipo() {
+    return tipo;
+  }
+
+  public void setTipo(String tipo) {
+    this.tipo = tipo;
+  }
+
+  public BigDecimal getValor() {
+    return valor;
+  }
+
+  public void setValor(BigDecimal valor) {
+    this.valor = valor;
+  }
+
+  public BigDecimal getSaldo() {
+    return saldo;
+  }
+
+  public void setSaldo(BigDecimal saldo) {
+    this.saldo = saldo;
+  }
 }

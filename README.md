@@ -62,6 +62,81 @@ npm ci
 npm run build
 ```
 
+## Modelo de datos
+
+- `Cliente` extiende el concepto de `Persona` con una relación 1:1 (`cliente.persona`). La información personal se guarda en la tabla `persona` y se referencia desde la tabla `cliente`.
+- `Cuenta` pertenece a un `Cliente` (relación muchos-a-uno).
+- `Movimiento` pertenece a una `Cuenta` (relación muchos-a-uno).
+
+## Endpoints (Postman-ready)
+
+Todos los endpoints soportan paginación estándar de Spring (`page`, `size`, `sort`).
+
+### Clientes
+
+- `POST /clientes`
+
+```json
+{
+  "clienteId": "CLI-001",
+  "contrasena": "supersecret",
+  "estado": true,
+  "persona": {
+    "nombre": "Juan Perez",
+    "genero": "M",
+    "edad": 30,
+    "identificacion": "123456789",
+    "direccion": "Calle Principal 123",
+    "telefono": "0999999999"
+  }
+}
+```
+
+- `GET /clientes?search=juan&page=0&size=10`
+
+- `PUT /clientes/{id}` (mismo payload que POST)
+
+- `DELETE /clientes/{id}`
+
+### Cuentas
+
+- `POST /cuentas`
+
+```json
+{
+  "numeroCuenta": "000123456",
+  "tipo": "AHORROS",
+  "saldo": 1000.00,
+  "estado": true,
+  "clienteId": 1
+}
+```
+
+- `GET /cuentas?search=AHORROS&page=0&size=10`
+
+- `PUT /cuentas/{id}` (mismo payload que POST)
+
+- `DELETE /cuentas/{id}`
+
+### Movimientos
+
+- `POST /movimientos`
+
+```json
+{
+  "cuentaId": 1,
+  "tipo": "DEBITO",
+  "valor": 100.00,
+  "fecha": "2024-01-25T10:15:00"
+}
+```
+
+- `GET /movimientos?cuentaId=1&tipo=DEBITO&page=0&size=10`
+
+- `PUT /movimientos/{id}` (mismo payload que POST)
+
+- `DELETE /movimientos/{id}`
+
 ## Base de datos
 
 El script `database/BaseDatos.sql` crea las tablas `persona`, `cliente`, `cuenta` y `movimiento` con datos de ejemplo.
