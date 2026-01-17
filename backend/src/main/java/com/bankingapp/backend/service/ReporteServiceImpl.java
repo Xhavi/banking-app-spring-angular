@@ -1,11 +1,16 @@
 package com.bankingapp.backend.service;
 
+import com.bankingapp.backend.domain.Cliente;
+import com.bankingapp.backend.domain.Cuenta;
 import com.bankingapp.backend.domain.Movimiento;
+import com.bankingapp.backend.dto.ReporteClienteResponse;
+import com.bankingapp.backend.dto.ReporteCuentaResponse;
 import com.bankingapp.backend.dto.ReporteMovimientoResponse;
 import com.bankingapp.backend.dto.ReporteResponse;
 import com.bankingapp.backend.exception.BusinessRuleException;
 import com.bankingapp.backend.exception.ResourceNotFoundException;
 import com.bankingapp.backend.repository.ClienteRepository;
+import com.bankingapp.backend.repository.CuentaRepository;
 import com.bankingapp.backend.repository.MovimientoRepository;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,10 +32,13 @@ public class ReporteServiceImpl implements ReporteService {
 
   private final MovimientoRepository movimientoRepository;
   private final ClienteRepository clienteRepository;
+  private final CuentaRepository cuentaRepository;
 
-  public ReporteServiceImpl(MovimientoRepository movimientoRepository, ClienteRepository clienteRepository) {
+  public ReporteServiceImpl(MovimientoRepository movimientoRepository, ClienteRepository clienteRepository,
+                            CuentaRepository cuentaRepository) {
     this.movimientoRepository = movimientoRepository;
     this.clienteRepository = clienteRepository;
+    this.cuentaRepository = cuentaRepository;
   }
 
   @Override
@@ -39,7 +47,7 @@ public class ReporteServiceImpl implements ReporteService {
       throw new BusinessRuleException("Rango de fechas inválido");
     }
 
-    clienteRepository.findById(clienteId)
+    Cliente cliente = clienteRepository.findById(clienteId)
       .orElseThrow(() -> new ResourceNotFoundException("Cliente not found with id " + clienteId));
 
     LocalDateTime start = fechaInicio.atStartOfDay();
@@ -51,9 +59,20 @@ public class ReporteServiceImpl implements ReporteService {
       .map(this::toReporteMovimiento)
       .toList();
 
-    String pdfBase64 = generarPdfBase64(fechaInicio, fechaFin, items);
+    List<Cuenta> cuentas = cuentaRepository.findByClienteId(clienteId);
+    List<ReporteCuentaResponse> resumenCuentas = cuentas.stream()
+      .map(cuenta -> buildCuentaResumen(cuenta, movimientos))
+      .toList();
 
-    return new ReporteResponse(items, pdfBase64);
+    ReporteClienteResponse clienteResponse = new ReporteClienteResponse(
+      cliente.getId(),
+      cliente.getClienteId(),
+      cliente.getPersona().getNombre()
+    );
+
+    String pdfBase64 = generarPdfBase64(fechaInicio, fechaFin, clienteResponse, resumenCuentas, items);
+
+    return new ReporteResponse(clienteResponse, resumenCuentas, items, pdfBase64);
   }
 
   private ReporteMovimientoResponse toReporteMovimiento(Movimiento movimiento) {
@@ -72,7 +91,31 @@ public class ReporteServiceImpl implements ReporteService {
     );
   }
 
-  private String generarPdfBase64(LocalDate fechaInicio, LocalDate fechaFin,
+  private ReporteCuentaResponse buildCuentaResumen(Cuenta cuenta, List<Movimiento> movimientos) {
+    BigDecimal totalDebitos = movimientos.stream()
+      .filter(mov -> mov.getCuenta().getId().equals(cuenta.getId()))
+      .filter(mov -> mov.getValor() != null && mov.getValor().compareTo(BigDecimal.ZERO) < 0)
+      .map(mov -> mov.getValor().abs())
+      .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    BigDecimal totalCreditos = movimientos.stream()
+      .filter(mov -> mov.getCuenta().getId().equals(cuenta.getId()))
+      .filter(mov -> mov.getValor() != null && mov.getValor().compareTo(BigDecimal.ZERO) > 0)
+      .map(Movimiento::getValor)
+      .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    return new ReporteCuentaResponse(
+      cuenta.getId(),
+      cuenta.getNumeroCuenta(),
+      cuenta.getTipo(),
+      cuenta.getSaldo(),
+      totalDebitos,
+      totalCreditos
+    );
+  }
+
+  private String generarPdfBase64(LocalDate fechaInicio, LocalDate fechaFin, ReporteClienteResponse cliente,
+                                  List<ReporteCuentaResponse> cuentas,
                                   List<ReporteMovimientoResponse> movimientos) {
     try (PDDocument document = new PDDocument()) {
       PDPage page = new PDPage(PDRectangle.LETTER);
@@ -84,8 +127,22 @@ public class ReporteServiceImpl implements ReporteService {
       float margin = 50;
       float y = page.getMediaBox().getHeight() - margin;
       y = writeLine(content, margin, y, "Reporte de movimientos");
+      y = writeLine(content, margin, y, "Cliente: " + cliente.nombre() + " (" + cliente.clienteId() + ")");
       y = writeLine(content, margin, y, "Periodo: " + fechaInicio + " - " + fechaFin);
       y = writeLine(content, margin, y, "Total movimientos: " + movimientos.size());
+      y -= 6;
+      y = writeLine(content, margin, y, "Resumen de cuentas:");
+      for (ReporteCuentaResponse cuenta : cuentas) {
+        String line = String.format(
+          "Cuenta %s | Tipo: %s | Saldo: %s | Debitos: %s | Creditos: %s",
+          cuenta.numeroCuenta(),
+          cuenta.tipoCuenta(),
+          cuenta.saldoActual(),
+          cuenta.totalDebitos(),
+          cuenta.totalCreditos()
+        );
+        y = writeLine(content, margin, y, line);
+      }
       y -= 10;
 
       for (ReporteMovimientoResponse item : movimientos) {

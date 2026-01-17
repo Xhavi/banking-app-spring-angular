@@ -8,7 +8,24 @@ export interface ReporteMovimiento {
   saldoDisponible: number | null;
 }
 
+export interface ReporteCuentaResumen {
+  cuentaId: number;
+  numeroCuenta: string;
+  tipoCuenta: string;
+  saldoActual: number;
+  totalDebitos: number;
+  totalCreditos: number;
+}
+
+export interface ReporteCliente {
+  id: number;
+  clienteId: string;
+  nombre: string;
+}
+
 export interface ReporteResponse {
+  cliente: ReporteCliente;
+  cuentas: ReporteCuentaResumen[];
   movimientos: ReporteMovimiento[];
   pdfBase64: string;
 }

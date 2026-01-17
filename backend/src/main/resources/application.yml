@@ -15,3 +15,6 @@ spring:
           time_zone: UTC
 server:
   port: 8080
+app:
+  movimientos:
+    daily-limit: ${MOVIMIENTOS_DAILY_LIMIT:1000}

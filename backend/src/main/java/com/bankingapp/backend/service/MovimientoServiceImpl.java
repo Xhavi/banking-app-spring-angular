@@ -8,9 +8,11 @@ import com.bankingapp.backend.exception.BusinessRuleException;
 import com.bankingapp.backend.exception.ResourceNotFoundException;
 import com.bankingapp.backend.repository.CuentaRepository;
 import com.bankingapp.backend.repository.MovimientoRepository;
+import com.bankingapp.backend.config.MovimientoProperties;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,13 +21,17 @@ import org.springframework.util.StringUtils;
 @Service
 public class MovimientoServiceImpl implements MovimientoService {
 
-  private static final BigDecimal DAILY_WITHDRAWAL_LIMIT = new BigDecimal("1000");
   private final MovimientoRepository movimientoRepository;
   private final CuentaRepository cuentaRepository;
+  private final MovimientoProperties movimientoProperties;
+  private final List<MovimientoStrategy> movimientoStrategies;
 
-  public MovimientoServiceImpl(MovimientoRepository movimientoRepository, CuentaRepository cuentaRepository) {
+  public MovimientoServiceImpl(MovimientoRepository movimientoRepository, CuentaRepository cuentaRepository,
+                               MovimientoProperties movimientoProperties, List<MovimientoStrategy> movimientoStrategies) {
     this.movimientoRepository = movimientoRepository;
     this.cuentaRepository = cuentaRepository;
+    this.movimientoProperties = movimientoProperties;
+    this.movimientoStrategies = movimientoStrategies;
   }
 
   @Override
@@ -78,9 +84,10 @@ public class MovimientoServiceImpl implements MovimientoService {
     movimiento.setFecha(request.fecha() != null ? request.fecha() : LocalDateTime.now());
     movimiento.setTipo(request.tipo());
 
+    MovimientoStrategy strategy = resolveStrategy(request.tipo());
     BigDecimal valor = request.valor();
-    BigDecimal adjustedValor = isDebito(request.tipo()) ? valor.abs().negate() : valor.abs();
-    if (updateCuentaSaldo && isDebito(request.tipo())) {
+    BigDecimal adjustedValor = strategy.normalizeValor(valor);
+    if (updateCuentaSaldo && strategy.requiresSaldoValidation()) {
       validarSaldoDisponible(cuenta, valor.abs());
       validarCupoDiario(cuenta, movimiento.getFecha(), valor.abs());
     }
@@ -99,10 +106,6 @@ public class MovimientoServiceImpl implements MovimientoService {
     return movimiento;
   }
 
-  private boolean isDebito(String tipo) {
-    return tipo != null && ("DEBITO".equalsIgnoreCase(tipo) || "RETIRO".equalsIgnoreCase(tipo));
-  }
-
   private void validarSaldoDisponible(Cuenta cuenta, BigDecimal valor) {
     BigDecimal saldoActual = cuenta.getSaldo() != null ? cuenta.getSaldo() : BigDecimal.ZERO;
     if (saldoActual.compareTo(valor) < 0) {
@@ -115,7 +118,8 @@ public class MovimientoServiceImpl implements MovimientoService {
     LocalDateTime start = fecha.atStartOfDay();
     LocalDateTime end = start.plusDays(1);
     BigDecimal usado = movimientoRepository.sumDailyWithdrawals(cuenta.getId(), start, end);
-    if (usado.add(valor).compareTo(DAILY_WITHDRAWAL_LIMIT) > 0) {
+    BigDecimal dailyLimit = movimientoProperties.getDailyLimit();
+    if (usado.add(valor).compareTo(dailyLimit) > 0) {
       throw new BusinessRuleException("Cupo diario Excedido");
     }
   }
@@ -129,5 +133,12 @@ public class MovimientoServiceImpl implements MovimientoService {
       movimiento.getValor(),
       movimiento.getSaldo()
     );
+  }
+
+  private MovimientoStrategy resolveStrategy(String tipo) {
+    return movimientoStrategies.stream()
+      .filter(strategy -> strategy.appliesTo(tipo))
+      .findFirst()
+      .orElseThrow(() -> new BusinessRuleException("Tipo de movimiento inválido"));
   }
 }

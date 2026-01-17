@@ -1,8 +1,12 @@
 <section class="page">
-<section class="reportes">
-  <h2>Reportes</h2>
+  <header class="page-header">
+    <div>
+      <h2>Reportes</h2>
+      <p>Estado de cuenta con resumen JSON y PDF.</p>
+    </div>
+  </header>
 
-  <form class="reporte-form" (ngSubmit)="buscarReporte()">
+  <form class="reporte-form card" (ngSubmit)="buscarReporte()">
     <label>
       Fecha inicio
       <input type="date" [(ngModel)]="fechaInicio" name="fechaInicio" required />
@@ -18,12 +22,54 @@
       <input type="number" [(ngModel)]="clienteId" name="clienteId" min="1" required />
     </label>
 
-    <button type="submit" [disabled]="isLoading">Buscar</button>
-    <button type="button" (click)="descargarPdf()" [disabled]="!reporte?.pdfBase64">Descargar PDF</button>
+    <div class="form-actions">
+      <button type="submit" [disabled]="isLoading">Buscar</button>
+      <button type="button" (click)="descargarPdf()" [disabled]="!reporte?.pdfBase64">Descargar PDF</button>
+    </div>
   </form>
 
   <p class="mensaje error" *ngIf="errorMessage">{{ errorMessage }}</p>
   <p class="mensaje info" *ngIf="infoMessage">{{ infoMessage }}</p>
+
+  <div class="resumen-grid" *ngIf="reporte">
+    <div class="card">
+      <h3>Cliente</h3>
+      <p><strong>{{ reporte.cliente.nombre }}</strong></p>
+      <p>ID: {{ reporte.cliente.clienteId }}</p>
+    </div>
+
+    <div class="card">
+      <h3>Resumen de cuentas</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Cuenta</th>
+            <th>Tipo</th>
+            <th>Saldo</th>
+            <th>Débitos</th>
+            <th>Créditos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cuenta of reporte.cuentas">
+            <td>{{ cuenta.numeroCuenta }}</td>
+            <td>{{ cuenta.tipoCuenta }}</td>
+            <td>{{ cuenta.saldoActual | number: '1.2-2' }}</td>
+            <td>{{ cuenta.totalDebitos | number: '1.2-2' }}</td>
+            <td>{{ cuenta.totalCreditos | number: '1.2-2' }}</td>
+          </tr>
+          <tr *ngIf="reporte.cuentas.length === 0">
+            <td colspan="5">Sin cuentas disponibles.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" *ngIf="reporte">
+    <h3>Resumen JSON</h3>
+    <pre>{{ reporte | json }}</pre>
+  </div>
 
   <div class="tabla-wrapper" *ngIf="reporte?.movimientos?.length">
     <table>
@@ -51,5 +97,4 @@
       </tbody>
     </table>
   </div>
-</section>
 </section>

@@ -1,6 +1,7 @@
 package com.bankingapp.backend.repository;
 
 import com.bankingapp.backend.domain.Cuenta;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +16,6 @@ public interface CuentaRepository extends JpaRepository<Cuenta, Long> {
        or lower(c.cliente.clienteId) like lower(concat('%', :search, '%'))
     """)
   Page<Cuenta> search(String search, Pageable pageable);
+
+  List<Cuenta> findByClienteId(Long clienteId);
 }

@@ -1,4 +1,77 @@
 <section class="page">
-  <h2>Movimientos</h2>
-  <p>Historial de movimientos (próximamente).</p>
+  <header class="page-header">
+    <div>
+      <h2>Movimientos</h2>
+      <p>Registro de depósitos y retiros con control de reglas.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <input type="number" [(ngModel)]="searchCuentaId" placeholder="Cuenta ID" />
+    <input type="text" [(ngModel)]="searchTipo" placeholder="Tipo (DEBITO/DEPOSITO)" />
+    <button type="button" (click)="buscar()">Buscar</button>
+  </div>
+
+  <div class="content-grid">
+    <form class="card" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <h3>Nuevo movimiento</h3>
+      <div class="form-grid">
+        <label>
+          Cuenta ID
+          <input type="number" formControlName="cuentaId" />
+          <span class="error" *ngIf="form.get('cuentaId')?.touched && form.get('cuentaId')?.invalid">Requerido.</span>
+        </label>
+        <label>
+          Tipo
+          <select formControlName="tipo">
+            <option value="">Seleccione</option>
+            <option value="DEPOSITO">Depósito</option>
+            <option value="DEBITO">Débito</option>
+          </select>
+          <span class="error" *ngIf="form.get('tipo')?.touched && form.get('tipo')?.invalid">Requerido.</span>
+        </label>
+        <label>
+          Valor
+          <input type="number" formControlName="valor" />
+          <span class="error" *ngIf="form.get('valor')?.touched && form.get('valor')?.invalid">Ingrese un valor.</span>
+        </label>
+        <label>
+          Fecha (opcional)
+          <input type="datetime-local" formControlName="fecha" />
+        </label>
+      </div>
+
+      <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+      <div class="actions">
+        <button type="submit" class="primary">Registrar</button>
+      </div>
+    </form>
+
+    <div class="card">
+      <h3>Listado</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Cuenta</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <th>Saldo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let movimiento of movimientos">
+            <td>{{ movimiento.fecha | date: 'short' }}</td>
+            <td>{{ movimiento.cuentaId }}</td>
+            <td>{{ movimiento.tipo }}</td>
+            <td>{{ movimiento.valor | number: '1.2-2' }}</td>
+            <td>{{ movimiento.saldo | number: '1.2-2' }}</td>
+          </tr>
+          <tr *ngIf="movimientos.length === 0">
+            <td colspan="5">No hay movimientos registrados.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </section>

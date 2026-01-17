@@ -7,7 +7,7 @@
 }
 
 .sidebar {
-  background: #0f172a;
+  background: #0b1b3f;
   color: #e2e8f0;
   padding: 2rem 1.5rem;
   display: flex;
@@ -19,8 +19,9 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-weight: 600;
-  font-size: 1.1rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: 0.08em;
 }
 
 .logo-mark {
@@ -59,10 +60,22 @@
   border-radius: 1rem;
   padding: 1.5rem;
   box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .header h1 {
   margin: 0 0 0.25rem;
+  font-size: 1.6rem;
+}
+
+.header-badge {
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
 }
 
 .content-body {

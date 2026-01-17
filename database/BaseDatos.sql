@@ -41,24 +41,25 @@ CREATE TABLE movimiento (
 
 INSERT INTO persona (nombre, genero, edad, identificacion, direccion, telefono)
 VALUES
-  ('Juan Perez', 'M', 35, '110112233', 'Av. Central 123', '555-0101'),
-  ('Maria Lopez', 'F', 28, '110223344', 'Calle Norte 456', '555-0202'),
-  ('Carlos Diaz', 'M', 42, '110334455', 'Av. Sur 789', '555-0303');
+  ('Jose Lema', 'M', 30, '1101112223', 'Av. Siempre Viva 123', '0999991111'),
+  ('Marianela Montalvo', 'F', 26, '1102223334', 'Calle Norte 456', '0999992222'),
+  ('Juan Osorio', 'M', 35, '1103334445', 'Av. Central 789', '0999993333');
 
 INSERT INTO cliente (cliente_id, persona_id, contrasena, estado)
 VALUES
-  ('CLI-001', 1, 'secreto1', true),
-  ('CLI-002', 2, 'secreto2', true),
-  ('CLI-003', 3, 'secreto3', true);
+  ('CLI-100', 1, 'Clave123', true),
+  ('CLI-200', 2, 'Clave456', true),
+  ('CLI-300', 3, 'Clave789', true);
 
 INSERT INTO cuenta (numero_cuenta, tipo, saldo, estado, cliente_id)
 VALUES
-  ('CTA-1001', 'Ahorros', 1500.00, true, 1),
-  ('CTA-1002', 'Corriente', 2500.00, true, 2),
-  ('CTA-1003', 'Ahorros', 500.00, true, 3);
+  ('478758', 'Ahorros', 2000.00, true, 1),
+  ('225487', 'Corriente', 1000.00, true, 2),
+  ('495878', 'Ahorros', 1500.00, true, 3);
 
 INSERT INTO movimiento (cuenta_id, fecha, tipo, valor, saldo)
 VALUES
-  (1, NOW() - INTERVAL '2 days', 'Deposito', 500.00, 1500.00),
-  (2, NOW() - INTERVAL '1 day', 'Retiro', -200.00, 2500.00),
-  (3, NOW(), 'Deposito', 300.00, 500.00);
+  (1, NOW() - INTERVAL '3 days', 'Deposito', 500.00, 2000.00),
+  (1, NOW() - INTERVAL '2 days', 'Retiro', -200.00, 1800.00),
+  (2, NOW() - INTERVAL '1 day', 'Deposito', 300.00, 1000.00),
+  (3, NOW(), 'Retiro', -100.00, 1400.00);

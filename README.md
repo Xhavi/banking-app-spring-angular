@@ -28,6 +28,7 @@ Servicios disponibles:
 
 - Backend: http://localhost:8080/health
 - Postgres: localhost:5432
+- Frontend (local dev): http://localhost:4200
 
 Variables de entorno usadas por el backend:
 
@@ -36,6 +37,7 @@ Variables de entorno usadas por el backend:
 - `DB_NAME` (default: `banking`)
 - `DB_USER` (default: `banking_user`)
 - `DB_PASSWORD` (default: `banking_pass`)
+- `MOVIMIENTOS_DAILY_LIMIT` (default: `1000`)
 
 ## Desarrollo local
 
@@ -46,12 +48,27 @@ cd backend
 mvn spring-boot:run
 ```
 
+Pruebas:
+
+```bash
+cd backend
+mvn test
+```
+
 ### Frontend
 
 ```bash
 cd frontend
 npm ci
 npm run start
+```
+
+Pruebas:
+
+```bash
+cd frontend
+npm ci
+npm test
 ```
 
 Compilar frontend:
@@ -140,3 +157,7 @@ Todos los endpoints soportan paginación estándar de Spring (`page`, `size`, `s
 ## Base de datos
 
 El script `database/BaseDatos.sql` crea las tablas `persona`, `cliente`, `cuenta` y `movimiento` con datos de ejemplo.
+
+## Postman
+
+La colección Postman se encuentra en `postman/BankingApp.postman_collection.json`.

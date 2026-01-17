@@ -1,4 +1,111 @@
 <section class="page">
-  <h2>Clientes</h2>
-  <p>Listado y administración de clientes (próximamente).</p>
+  <header class="page-header">
+    <div>
+      <h2>Clientes</h2>
+      <p>Gestión de clientes y datos personales.</p>
+    </div>
+    <button type="button" class="primary" (click)="nuevo()">Nuevo</button>
+  </header>
+
+  <div class="toolbar">
+    <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar por nombre, identificación o cliente" />
+    <button type="button" (click)="buscar()">Buscar</button>
+  </div>
+
+  <div class="content-grid">
+    <form class="card" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <h3>{{ editingId ? 'Editar cliente' : 'Nuevo cliente' }}</h3>
+      <div class="form-grid">
+        <label>
+          Cliente ID
+          <input formControlName="clienteId" />
+          <span class="error" *ngIf="form.get('clienteId')?.touched && form.get('clienteId')?.invalid">Requerido.</span>
+        </label>
+        <label>
+          Contraseña
+          <input type="password" formControlName="contrasena" />
+          <span class="error" *ngIf="form.get('contrasena')?.touched && form.get('contrasena')?.invalid">Requerido.</span>
+        </label>
+        <label>
+          Estado
+          <select formControlName="estado">
+            <option [ngValue]="true">Activo</option>
+            <option [ngValue]="false">Inactivo</option>
+          </select>
+        </label>
+      </div>
+
+      <h4>Datos personales</h4>
+      <div class="form-grid" formGroupName="persona">
+        <label>
+          Nombre
+          <input formControlName="nombre" />
+          <span class="error" *ngIf="form.get('persona.nombre')?.touched && form.get('persona.nombre')?.invalid">Requerido.</span>
+        </label>
+        <label>
+          Género
+          <input formControlName="genero" />
+          <span class="error" *ngIf="form.get('persona.genero')?.touched && form.get('persona.genero')?.invalid">Requerido.</span>
+        </label>
+        <label>
+          Edad
+          <input type="number" formControlName="edad" />
+          <span class="error" *ngIf="form.get('persona.edad')?.touched && form.get('persona.edad')?.invalid">Requerido.</span>
+        </label>
+        <label>
+          Identificación
+          <input formControlName="identificacion" />
+          <span class="error" *ngIf="form.get('persona.identificacion')?.touched && form.get('persona.identificacion')?.invalid">Requerido.</span>
+        </label>
+        <label>
+          Dirección
+          <input formControlName="direccion" />
+        </label>
+        <label>
+          Teléfono
+          <input formControlName="telefono" />
+        </label>
+      </div>
+
+      <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+      <div class="actions">
+        <button type="submit" class="primary">{{ editingId ? 'Actualizar' : 'Guardar' }}</button>
+        <button type="button" class="ghost" (click)="nuevo()">Limpiar</button>
+      </div>
+    </form>
+
+    <div class="card">
+      <h3>Listado</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Cliente ID</th>
+            <th>Nombre</th>
+            <th>Identificación</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of clientes">
+            <td>{{ cliente.clienteId }}</td>
+            <td>{{ cliente.persona.nombre }}</td>
+            <td>{{ cliente.persona.identificacion }}</td>
+            <td>
+              <span [class.badge-success]="cliente.estado" [class.badge-danger]="!cliente.estado">
+                {{ cliente.estado ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td class="actions">
+              <button type="button" class="ghost" (click)="editar(cliente)">Editar</button>
+              <button type="button" class="danger" (click)="eliminar(cliente)">Eliminar</button>
+            </td>
+          </tr>
+          <tr *ngIf="clientes.length === 0">
+            <td colspan="5">No hay clientes registrados.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </section>
